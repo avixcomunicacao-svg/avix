@@ -1,26 +1,227 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------- Tokens Avix (fonte: design system "Avix") ---------- */
+:root,
+[data-theme="light"] {
+  --surface-000: #fffbf2;
+  --surface-100: #f6f4f0;
+  --surface-200: #ffffff;
+  --surface-300: #efece6;
+  --ink: #0a001c;
+  --ink-muted: #473e54;
+  --ink-faint: #6b6478;
+  --border: #e6e1d8;
+  --border-strong: #938b7d;
+  --brand: #4c238d;
+  --on-brand: #fffbf2;
+  --brand-text: #4c238d;
+  --brand-soft: #ede6f8;
+  --brand-deep: #1c0b48;
+  --brand-glow: #6a47b7;
+  --accent: #63c8c3;
+  --on-accent: #0a001c;
+  --accent-text: #17706b;
+  --accent-soft: #dcf3f1;
+  --accent-deep: #45b0ab;
+  --accent-glow: #8fe3dd;
+  --success: #2b7a4b;
+  --success-soft: #e3f3e9;
+  --warning: #9a5a00;
+  --warning-soft: #fbeed6;
+  --danger: #b02a22;
+  --danger-soft: #fbe5e3;
+  --focus: #4c238d;
+  --overlay: #0a001ca6;
+  --shadow-sm: 0 1px 2px #0a001c14;
+  --shadow-md: 0 6px 16px -4px #0a001c1f;
+  --shadow-lg: 0 20px 40px -12px #0a001c33;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="dark"] {
+  --surface-000: #0a001c;
+  --surface-100: #140a2a;
+  --surface-200: #1c1134;
+  --surface-300: #261a40;
+  --ink: #fffbf2;
+  --ink-muted: #b8b0c4;
+  --ink-faint: #8f879e;
+  --border: #2b2042;
+  --border-strong: #6f6190;
+  --brand-text: #b9a3f2;
+  --brand-soft: #241847;
+  --accent-text: #63c8c3;
+  --accent-soft: #123531;
+  --success: #7fd1a0;
+  --success-soft: #163525;
+  --warning: #f3b85c;
+  --warning-soft: #3a2a10;
+  --danger: #f49a93;
+  --danger-soft: #3d1715;
+  --focus: #b9a3f2;
+  --overlay: #000000b3;
+  --shadow-sm: 0 1px 2px #00000066;
+  --shadow-md: 0 6px 16px -4px #00000099;
+  --shadow-lg: 0 20px 40px -12px #000000cc;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --surface-000: #0a001c;
+    --surface-100: #140a2a;
+    --surface-200: #1c1134;
+    --surface-300: #261a40;
+    --ink: #fffbf2;
+    --ink-muted: #b8b0c4;
+    --ink-faint: #8f879e;
+    --border: #2b2042;
+    --border-strong: #6f6190;
+    --brand-text: #b9a3f2;
+    --brand-soft: #241847;
+    --accent-text: #63c8c3;
+    --accent-soft: #123531;
+    --success: #7fd1a0;
+    --success-soft: #163525;
+    --warning: #f3b85c;
+    --warning-soft: #3a2a10;
+    --danger: #f49a93;
+    --danger-soft: #3d1715;
+    --focus: #b9a3f2;
+    --overlay: #000000b3;
+    --shadow-sm: 0 1px 2px #00000066;
+    --shadow-md: 0 6px 16px -4px #00000099;
+    --shadow-lg: 0 20px 40px -12px #000000cc;
   }
 }
 
+:root {
+  --gradient-brand: radial-gradient(120% 90% at 8% 0%, #6a47b7 0%, rgba(106, 71, 183, 0) 55%),
+    linear-gradient(160deg, #3d2080 0%, #1c0b48 55%, #0e0430 100%);
+  --gradient-brand-soft: linear-gradient(135deg, #6a47b7 0%, #3d2080 100%);
+  --gradient-accent: linear-gradient(135deg, #8fe3dd 0%, #63c8c3 50%, #45b0ab 100%);
+  --gradient-progress: linear-gradient(90deg, #45b0ab 0%, #8fe3dd 100%);
+  --gradient-ink: radial-gradient(90% 70% at 20% 10%, #3a1d78 0%, rgba(58, 29, 120, 0) 60%),
+    linear-gradient(180deg, #160a36 0%, #0a001c 100%);
+  --font-display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --font-text: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 250ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@theme inline {
+  --color-surface-000: var(--surface-000);
+  --color-surface-100: var(--surface-100);
+  --color-surface-200: var(--surface-200);
+  --color-surface-300: var(--surface-300);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-brand: var(--brand);
+  --color-on-brand: var(--on-brand);
+  --color-brand-text: var(--brand-text);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-glow: var(--brand-glow);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-text: var(--accent-text);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-glow: var(--accent-glow);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-focus: var(--focus);
+  --color-overlay: var(--overlay);
+
+  --font-display: var(--font-display);
+  --font-text: var(--font-text);
+  --font-mono: var(--font-mono);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  --ease-avix: var(--ease);
+}
+
+/* ---------- Base ---------- */
+html {
+  font-family: var(--font-text);
+  color: var(--ink);
+  background: var(--surface-000);
+  -webkit-font-smoothing: antialiased;
+}
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  background: var(--surface-000);
+  color: var(--ink);
+}
+*:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+a {
+  color: var(--brand-text);
+}
+
+/* ---------- Estilos tipográficos ---------- */
+@utility t-display { font: 700 40px/44px var(--font-display); letter-spacing: -0.02em; }
+@utility t-h1 { font: 700 28px/34px var(--font-display); letter-spacing: -0.015em; }
+@utility t-h2 { font: 600 22px/28px var(--font-display); letter-spacing: -0.01em; }
+@utility t-h3 { font: 600 18px/24px var(--font-display); }
+@utility t-numeral { font: 600 32px/36px var(--font-display); letter-spacing: -0.02em; }
+@utility t-body-lg { font: 400 17px/26px var(--font-text); }
+@utility t-body { font: 400 15px/22px var(--font-text); }
+@utility t-body-sm { font: 400 13px/18px var(--font-text); }
+@utility t-label { font: 600 13px/16px var(--font-text); letter-spacing: 0.01em; }
+@utility t-caption { font: 500 12px/16px var(--font-text); letter-spacing: 0.02em; }
+@utility t-button { font: 600 15px/20px var(--font-text); }
+@utility t-mono { font: 400 13px/18px var(--font-mono); }
+
+/* ---------- Degradês ---------- */
+@utility bg-gradient-brand { background: var(--gradient-brand); }
+@utility bg-gradient-brand-soft { background: var(--gradient-brand-soft); }
+@utility bg-gradient-accent { background: var(--gradient-accent); }
+@utility bg-gradient-progress { background: var(--gradient-progress); }
+@utility bg-gradient-ink { background: var(--gradient-ink); }
+
+/* ---------- Skeleton ---------- */
+@keyframes avix-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@utility skeleton {
+  background: var(--surface-300);
+  border-radius: 6px;
+  animation: avix-pulse 1.4s var(--ease) infinite;
+}
+
+/* ---------- Checkbox ---------- */
+.avix-checkbox {
+  appearance: none;
+  border-radius: 6px;
+  border: 2px solid var(--border-strong);
+  background: var(--surface-200);
+  transition: background var(--duration-fast) var(--ease), border-color var(--duration-fast) var(--ease);
+}
+.avix-checkbox:checked {
+  border-color: var(--accent);
+  background: var(--gradient-accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a001c' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"), var(--gradient-accent);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 13px, 100%;
 }
