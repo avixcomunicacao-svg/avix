@@ -132,11 +132,15 @@ begin
 end $$;
 
 -- ---------- users ----------
+drop policy if exists users_self_read on public.users;
 create policy users_self_read on public.users for select to authenticated using (id = auth.uid());
+drop policy if exists users_self_update on public.users;
 create policy users_self_update on public.users for update to authenticated using (id = auth.uid()) with check (id = auth.uid() and role = 'membro');
 
 -- ---------- member_profiles (notes_private nunca sai pela view de membro) ----------
+drop policy if exists profile_self_read on public.member_profiles;
 create policy profile_self_read on public.member_profiles for select to authenticated using (user_id = auth.uid());
+drop policy if exists profile_self_update on public.member_profiles;
 create policy profile_self_update on public.member_profiles for update to authenticated
   using (user_id = auth.uid()) with check (user_id = auth.uid());
 -- Colunas que o membro não pode alterar ficam protegidas por trigger:
@@ -165,34 +169,43 @@ create or replace view public.member_profile_me with (security_invoker = true) a
          consent_accepted_at, agenda_time, agenda_channels, timezone, last_seen_at
   from public.member_profiles;
 
+drop policy if exists availability_self on public.member_availability;
 create policy availability_self on public.member_availability for all to authenticated
   using (member_id = auth.uid()) with check (member_id = auth.uid());
 
 -- ---------- Conteúdo ----------
+drop policy if exists tracks_member_read on public.tracks;
 create policy tracks_member_read on public.tracks for select to authenticated
   using (public.member_is_active(auth.uid()) and public.member_has_track(auth.uid(), id));
 
+drop policy if exists member_tracks_self_read on public.member_tracks;
 create policy member_tracks_self_read on public.member_tracks for select to authenticated
   using (member_id = auth.uid());
 
+drop policy if exists modules_member_read on public.modules;
 create policy modules_member_read on public.modules for select to authenticated
   using (public.member_is_active(auth.uid()) and public.member_has_track(auth.uid(), track_id));
 
+drop policy if exists lessons_member_read on public.lessons;
 create policy lessons_member_read on public.lessons for select to authenticated
   using (public.member_is_active(auth.uid()) and public.lesson_released_for(auth.uid(), id));
 
+drop policy if exists materials_member_read on public.lesson_materials;
 create policy materials_member_read on public.lesson_materials for select to authenticated
   using (public.member_is_active(auth.uid()) and public.lesson_released_for(auth.uid(), lesson_id));
 
+drop policy if exists progress_self on public.lesson_progress;
 create policy progress_self on public.lesson_progress for all to authenticated
   using (member_id = auth.uid())
   with check (member_id = auth.uid() and public.lesson_released_for(auth.uid(), lesson_id));
 
+drop policy if exists ratings_self on public.ratings;
 create policy ratings_self on public.ratings for all to authenticated
   using (member_id = auth.uid()) with check (member_id = auth.uid());
 
 -- ---------- Mentorias ao vivo ----------
 -- Membro vê sessões em grupo da trilha dele e individuais em que participa
+drop policy if exists live_sessions_member_read on public.live_sessions;
 create policy live_sessions_member_read on public.live_sessions for select to authenticated
   using (
     public.member_is_active(auth.uid()) and (
@@ -200,8 +213,10 @@ create policy live_sessions_member_read on public.live_sessions for select to au
       or exists (select 1 from public.live_session_participants p where p.session_id = id and p.member_id = auth.uid())
     )
   );
+drop policy if exists participants_self_read on public.live_session_participants;
 create policy participants_self_read on public.live_session_participants for select to authenticated
   using (member_id = auth.uid());
+drop policy if exists recordings_member_read on public.recordings;
 create policy recordings_member_read on public.recordings for select to authenticated
   using (
     public.member_is_active(auth.uid()) and exists (
@@ -212,6 +227,7 @@ create policy recordings_member_read on public.recordings for select to authenti
       )
     )
   );
+drop policy if exists transcripts_member_read on public.transcripts;
 create policy transcripts_member_read on public.transcripts for select to authenticated
   using (
     public.member_is_active(auth.uid()) and (
@@ -224,33 +240,45 @@ create policy transcripts_member_read on public.transcripts for select to authen
         select 1 from public.whatsapp_messages w where w.transcript_id = id and w.member_id = auth.uid()))
     )
   );
+drop policy if exists segments_member_read on public.transcript_segments;
 create policy segments_member_read on public.transcript_segments for select to authenticated
   using (exists (select 1 from public.transcripts t where t.id = transcript_id));
 
 -- ---------- WhatsApp, atas e plano: só o próprio ----------
+drop policy if exists wa_self_read on public.whatsapp_messages;
 create policy wa_self_read on public.whatsapp_messages for select to authenticated using (member_id = auth.uid());
+drop policy if exists conv_self_read on public.conversation_sessions;
 create policy conv_self_read on public.conversation_sessions for select to authenticated using (member_id = auth.uid());
+drop policy if exists minutes_self_read on public.meeting_minutes;
 create policy minutes_self_read on public.meeting_minutes for select to authenticated
   using (publish_status = 'publicada' and (
     member_id = auth.uid()
     or (member_id is null and source_type = 'live_session' and exists (
       select 1 from public.live_sessions s where s.id = source_id and s.type = 'grupo' and s.track_id is not null and public.member_has_track(auth.uid(), s.track_id)))
   ));
+drop policy if exists plans_self_read on public.action_plans;
 create policy plans_self_read on public.action_plans for select to authenticated
   using (member_id = auth.uid() and publish_status = 'publicada');
+drop policy if exists items_self_read on public.action_items;
 create policy items_self_read on public.action_items for select to authenticated using (member_id = auth.uid());
+drop policy if exists items_self_update on public.action_items;
 create policy items_self_update on public.action_items for update to authenticated
   using (member_id = auth.uid()) with check (member_id = auth.uid());
+drop policy if exists items_self_insert on public.action_items;
 create policy items_self_insert on public.action_items for insert to authenticated
   with check (member_id = auth.uid() and is_suggested = false);
+drop policy if exists item_events_self on public.action_item_events;
 create policy item_events_self on public.action_item_events for all to authenticated
   using (exists (select 1 from public.action_items i where i.id = item_id and i.member_id = auth.uid()))
   with check (exists (select 1 from public.action_items i where i.id = item_id and i.member_id = auth.uid()));
 
 -- ---------- Notificações e avisos ----------
+drop policy if exists notif_self on public.notifications;
 create policy notif_self on public.notifications for select to authenticated using (user_id = auth.uid());
+drop policy if exists notif_pref_self on public.notification_preferences;
 create policy notif_pref_self on public.notification_preferences for all to authenticated
   using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists announcements_member_read on public.announcements;
 create policy announcements_member_read on public.announcements for select to authenticated
   using (public.member_is_active(auth.uid()) and (expires_at is null or expires_at > now())
     and (track_id is null or public.member_has_track(auth.uid(), track_id)));
